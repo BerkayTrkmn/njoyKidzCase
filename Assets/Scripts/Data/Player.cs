@@ -7,12 +7,11 @@ using UnityEngine;
 public enum PlayerState
 {
     Idle,
-    Moving
+    Moving,
+    Dead
 }
-[RequireComponent(typeof(TouchManager))]
 public class Player : Character
 {
-    private TouchManager touchManager;
     private PlayerState playerState = PlayerState.Idle;
     [SerializeField] private bool isKeyboardOn = true;
     [SerializeField] private KeyCode upKey = KeyCode.W;
@@ -21,37 +20,29 @@ public class Player : Character
     [SerializeField] private KeyCode downKey = KeyCode.S;
 
 
-    private void OnEnable()
-    {
-        touchManager = GetComponent<TouchManager>();
-        touchManager.onTouchMoved += OnTouchMoved;
-    }
     private void Update()
     {
         if (isKeyboardOn) KeyboardMovement();
-    }
-
-    private void OnTouchMoved(TouchInput touch)
-    {
     }
 
 
 
     private void KeyboardMovement()
     {
-        if(playerState == PlayerState.Idle)
+        if (playerState == PlayerState.Idle)
         {
-            KeyboardMovement(upKey, CurrentTile.TilePosition + Vector2.up);
-            KeyboardMovement(leftKey, CurrentTile.TilePosition + Vector2.left);
-            KeyboardMovement(rightKey, CurrentTile.TilePosition + Vector2.right);
-            KeyboardMovement(downKey, CurrentTile.TilePosition + Vector2.down);
+            MoveTile(upKey, CurrentTile.TilePosition + Vector2.up);
+            MoveTile(leftKey, CurrentTile.TilePosition + Vector2.left);
+            MoveTile(rightKey, CurrentTile.TilePosition + Vector2.right);
+            MoveTile(downKey, CurrentTile.TilePosition + Vector2.down);
         }
-       
+
     }
-    private void KeyboardMovement(KeyCode _keyCode, Vector2 _destinationIndex)
+    private void MoveTile(KeyCode _keyCode, Vector2 _destinationIndex)
     {
         if (Input.GetKey(_keyCode))
         {
+            if (CharacterFalling(_destinationIndex, () => { /*OnFall level failed */Config.OnGameFailed?.Invoke(); })) return;
             Tile _destinationTile = GetTile(_destinationIndex);
             if (!_destinationTile.IsOccupied)
             {
@@ -59,23 +50,19 @@ public class Player : Character
                 CurrentTile.UnoccupyTile();
                 _destinationTile.OccupyTile(this);
                 MoveTile(_destinationIndex, () => { CurrentTile = _destinationTile; playerState = PlayerState.Idle; });
-                Debug.Log("Moving ");
+                Debug.Log("Moving: " + _destinationIndex);
+                Config.OnPlayerMoved?.Invoke(_destinationIndex);
             }
             else
                 Debug.Log("Can't move Occupied!!! ");
-           
+
         }
 
     }
-
-
-
-
-    private void OnDisable()
+    protected override void FallFromGrid(Vector2 _fallingDirection, Action _onComplete = null)
     {
-        touchManager.onTouchMoved -= OnTouchMoved;
-
+        base.FallFromGrid(_fallingDirection, _onComplete);
+        playerState = PlayerState.Dead;
     }
-
 
 }
