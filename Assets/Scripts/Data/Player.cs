@@ -18,6 +18,7 @@ public class Player : Character
     [SerializeField] private KeyCode leftKey = KeyCode.A;
     [SerializeField] private KeyCode rightKey = KeyCode.D;
     [SerializeField] private KeyCode downKey = KeyCode.S;
+   
 
 
     private void Update()
@@ -43,18 +44,7 @@ public class Player : Character
         if (Input.GetKey(_keyCode))
         {
             if (CharacterFalling(_destinationIndex, () => { /*OnFall level failed */Config.OnGameFailed?.Invoke(); })) return;
-            Tile _destinationTile = GetTile(_destinationIndex);
-            if (!_destinationTile.IsOccupied)
-            {
-                playerState = PlayerState.Moving;
-                CurrentTile.UnoccupyTile();
-                _destinationTile.OccupyTile(this);
-                MoveTile(_destinationIndex, () => { CurrentTile = _destinationTile; playerState = PlayerState.Idle; });
-                Debug.Log("Moving: " + _destinationIndex);
-                Config.OnPlayerMoved?.Invoke(_destinationIndex);
-            }
-            else
-                Debug.Log("Can't move Occupied!!! ");
+            MoveCharacter(_destinationIndex);
 
         }
 
@@ -64,5 +54,55 @@ public class Player : Character
         base.FallFromGrid(_fallingDirection, _onComplete);
         playerState = PlayerState.Dead;
     }
+    protected override void MoveCharacter(Vector2 _destinationIndex)
+    {
+        Tile _destinationTile = GetTile(_destinationIndex);
+        if (!_destinationTile.IsOccupied)
+        {
+            PlayerOccupyTile(_destinationTile, _destinationIndex);
+        }
+        else
+        {
+            if (!CheckCoin(_destinationTile, _destinationIndex))
+            {
+                Debug.Log("Can't move Occupied!!! ");
+                playerState = PlayerState.Idle;
+            }
+        }
+    }
+    public void PlayerOccupyTile(Tile _destinationTile, Vector2 _destinationIndex, Action _onComplete=null)
+    {
+        playerState = PlayerState.Moving;
+        CurrentTile.UnoccupyTile();
+        _destinationTile.OccupyTile(this);
+        MoveTile(_destinationIndex, () => { CurrentTile = _destinationTile; playerState = PlayerState.Idle; _onComplete?.Invoke(); });
+        Debug.Log("Moving: " + _destinationIndex);
+        Config.OnPlayerMoved?.Invoke(_destinationIndex);
+    }
 
+    public bool CheckCoin(Tile _destinationTile, Vector2 _destinationIndex)
+    {
+        if(_destinationTile.OccupatedItem.GetType() == typeof(Coin))
+        {
+            Coin _currentCoin = (Coin)_destinationTile.OccupatedItem;
+            if (_currentCoin.Order == LevelCreator.Instance.nextCoinOrder)
+            {
+                //Pickup Coin
+                PlayerOccupyTile(_destinationTile, _destinationIndex,
+                    ()=> {
+                        Debug.Log("Coin " + LevelCreator.Instance.nextCoinOrder + "collected ");
+                        LevelCreator.Instance.nextCoinOrder++;
+                        LevelCreator.Instance.coinList.Remove(_currentCoin);
+                        _currentCoin.gameObject.Destroy();
+                        if (LevelCreator.Instance.coinList.Count == 0)
+                            Config.OnGameCompleted?.Invoke();
+                        Config.OnCoinCollected.Invoke(_currentCoin, LevelCreator.Instance.nextCoinOrder);
+                    });
+                return true;
+            }
+            else
+                return false;
+        }
+        return false;
+    }
 }

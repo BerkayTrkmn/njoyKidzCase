@@ -9,13 +9,28 @@ public class LevelCreator : MonoBehaviour
 
     [SerializeField] private Tile tilePrefab;
     [SerializeField] private Player playerPrefab;
+    [SerializeField] private Vector2 playerStartPoint = new Vector2(7, 7);
+
+    [Range(5,50)]
     public int GridHeight = 15;
+    [Range(5, 50)]
     public int GridWidth = 15;
+
     //Tile size + space
     public float TileHeight = 1.5f;
     public float TileWidth = 1.5f;
+
     private Camera cam;
-    [SerializeField] private Vector2 playerStartPoint = new Vector2(7, 7);
+
+    //COIN
+    [SerializeField]private bool isCoinNeeded = false;
+    [SerializeField] private int coinCount = 5;
+    [SerializeField]private Coin coinPrefab;
+    public List<Coin> coinList;
+
+    public Dictionary<Vector2, Tile> TileGrid = new Dictionary<Vector2, Tile>();
+
+    public int nextCoinOrder = 1;
     private void Awake()
     {
         if (Instance == null)
@@ -29,8 +44,10 @@ public class LevelCreator : MonoBehaviour
 
     public void SetLevel()
     {
+       
         CreateLevel(GridHeight, GridWidth);
-        CreatePlayer(Config.TileGrid[playerStartPoint]);
+        CreatePlayer(TileGrid[playerStartPoint]);
+        if (isCoinNeeded) CreateCoins(coinCount);
     }
     public void SetCamera()
     {
@@ -46,7 +63,7 @@ public class LevelCreator : MonoBehaviour
             {
                 Tile tempTile = Instantiate(tilePrefab, new Vector3(x * TileWidth, y * TileHeight), Quaternion.identity, transform);
                 tempTile.SetTile(new Vector2(x, y), false);
-                Config.TileGrid.Add(new Vector3(x, y), tempTile);
+                TileGrid.Add(new Vector3(x, y), tempTile);
             }
         }
         Config.OnLevelCreated?.Invoke(new Vector2(TileWidth, TileHeight), new Vector2(GridWidth, GridHeight));
@@ -57,6 +74,28 @@ public class LevelCreator : MonoBehaviour
         Config.Player.CurrentTile = _startingTile;
         _startingTile.OccupyTile(Config.Player);
     }
+    public void CreateCoins(int _number)
+    {
+       
+        for (int i = 0; i < _number; i++)
+        {
+            Tile _currentTile;
+            bool _isOccupied;
+            do
+            {
+                int _randomX = Random.Range(0, GridWidth);
+                int _randomY = Random.Range(0, GridHeight);
 
+                 _currentTile = TileGrid[new Vector3(_randomX, _randomY)];
+                if (_currentTile.IsOccupied) _isOccupied = true;
+                else _isOccupied = false;
+            } while (_isOccupied);
+
+            Coin _currentCoin = Instantiate(coinPrefab, _currentTile.transform.position, Quaternion.identity);
+            _currentCoin.Order = i+1;
+            _currentTile.OccupyTile(_currentCoin);
+            coinList.Add(_currentCoin);
+        }
+    }
 
 }

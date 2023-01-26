@@ -12,7 +12,7 @@ public class Character : MonoBehaviour
 
     protected Tile GetTile(Vector2 _tileIndex)
     {
-        return Config.TileGrid[_tileIndex];
+        return LevelCreator.Instance.TileGrid[_tileIndex];
     }
     protected void MoveTile(Tile _destinationTile, Action _onComplete = null)
     {
@@ -25,9 +25,8 @@ public class Character : MonoBehaviour
         transform.DOMove(_upTile.transform.position, MovingTime).SetEase(Ease.InOutSine).OnComplete(() => { _onComplete?.Invoke(); });
         transform.DOScale(new Vector3(1.5f, 1.5f,transform.localScale.z), MovingTime/2).SetLoops(2, LoopType.Yoyo);
     }
-    private void MoveCharacter(Vector2 _destinationIndex)
+    protected virtual void MoveCharacter(Vector2 _destinationIndex)
     {
-        if (CharacterFalling(_destinationIndex)) return;
         Tile _destinationTile = GetTile(_destinationIndex);
         if (!_destinationTile.IsOccupied)
         {

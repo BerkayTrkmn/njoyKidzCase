@@ -6,7 +6,7 @@ using UnityEngine;
 public class Config : MonoBehaviour
 {
 
-    public static Dictionary<Vector2, Tile> TileGrid =new Dictionary<Vector2, Tile>();
+    
     public static Player Player;
     /// <summary>
     /// Tile length , grid count
@@ -15,5 +15,6 @@ public class Config : MonoBehaviour
     public static Action OnGameStarted;
     public static Action OnGameCompleted;
     public static Action OnGameFailed;
+    public static Action<Coin,int> OnCoinCollected;
     public static Action<Vector2> OnPlayerMoved;
 }
