@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
+ 
 namespace HelloScripts
 {
     public struct TouchInput
@@ -23,7 +24,7 @@ namespace HelloScripts
     }
 
     public delegate void TouchEvent(TouchInput touch);
-
+    //Editörde dokunmatik ekran çalışmıyor bu script çalışmasını sağlıyor
     public class TouchManager : MonoBehaviour
     {
         public static TouchManager Instance;

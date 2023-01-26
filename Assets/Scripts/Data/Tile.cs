@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
+//Oyundaki kareler  kullanýcý bunun üstünde hareket ediyor
 public class Tile : MonoBehaviour
 {
     [SerializeField] private Vector2 tilePosition;
@@ -18,7 +18,6 @@ public class Tile : MonoBehaviour
     private void Awake()
     {
         indexText = transform.GetChild(0).GetComponent<TextMeshPro>();
-
     }
 
     public void SetTile(Vector2 _tilePosition, bool _isOccupied, Character _occupatedItem = null)
@@ -27,7 +26,6 @@ public class Tile : MonoBehaviour
         isOccupied = _isOccupied;
         if (_occupatedItem != null) occupatedItem = _occupatedItem;
         SetIndexText(_tilePosition);
-
     }
     public void OccupyTile(Character _occupiedCharacter)
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//OOyunda bulunan tüm karakterler ortak scripti (Inheritance)
 public class Character : MonoBehaviour
 {
     public int ID;

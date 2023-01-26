@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using HelloScripts;
-
+using HelloScripts;//Hello scripts benim güzel bulduðum kendim oluþturduðum scriptlerimdir
+//Oyuna baþlarken yapýlan level oluþturma iþlemleri
 public class LevelCreator : MonoBehaviour
 {
     public static LevelCreator Instance;

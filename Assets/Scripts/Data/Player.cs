@@ -1,5 +1,5 @@
 using DG.Tweening;
-using HelloScripts;
+using HelloScripts;//Hello scripts benim güzel bulduðum kendim oluþturduðum scriptlerimdir
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ public enum PlayerState
     Moving,
     Dead
 }
+//Oyuncunun kontrol ettiði karakter
 public class Player : Character
 {
     private PlayerState playerState = PlayerState.Idle;
@@ -19,15 +20,10 @@ public class Player : Character
     [SerializeField] private KeyCode rightKey = KeyCode.D;
     [SerializeField] private KeyCode downKey = KeyCode.S;
    
-
-
     private void Update()
     {
         if (isKeyboardOn) KeyboardMovement();
     }
-
-
-
     private void KeyboardMovement()
     {
         if (playerState == PlayerState.Idle)

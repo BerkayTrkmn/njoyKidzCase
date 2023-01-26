@@ -4,14 +4,13 @@ using System.Data.SqlTypes;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using DG.Tweening;
-//using ElephantSDK;
-//using MoreMountains.NiceVibrations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+//Oyundaki kullanýcý arayüzü kontrolü
+//istenmediði için en basit seviyede yaptým
 public class UIManager : MonoBehaviour
 {
 

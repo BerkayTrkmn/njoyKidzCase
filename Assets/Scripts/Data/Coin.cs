@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+//Toplana paralar karakter özelliðinde(Inherited)
 public class Coin : Character
 {
     [SerializeField] private int order;
